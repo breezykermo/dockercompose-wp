@@ -2,12 +2,14 @@ version: '3'
 
 services:
   db:
-    image: mysql:8.0
+    build:
+      context: ./
+      dockerfile: Dockerfile-mysql
     container_name: db
     restart: unless-stopped
     env_file: .env
     environment:
-      - MYSQL_DATABASE=wordpress
+      - MYSQL_DATABASE=$THE_WP_DB_NAME
     volumes:
       - dbdata:/var/lib/mysql
     command: '--default-authentication-plugin=mysql_native_password'
@@ -25,7 +27,7 @@ services:
       - WORDPRESS_DB_HOST=db:3306
       - WORDPRESS_DB_USER=$MYSQL_USER
       - WORDPRESS_DB_PASSWORD=$MYSQL_PASSWORD
-      - WORDPRESS_DB_NAME=wordpress
+      - WORDPRESS_DB_NAME=$THE_WP_DB_NAME
     volumes:
       - wordpress:/var/www/html
     networks:
@@ -41,7 +43,7 @@ services:
       - "80:80"
     volumes:
       - wordpress:/var/www/html
-      - ./nginx-conf:/etc/nginx/conf.d
+      - ./conf:/etc/nginx/conf.d
     networks:
       - app-network
 
